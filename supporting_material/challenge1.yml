@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: This is a template file for challenge 1
+Resources:
+  myWebAccessSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group for Apache enabled EC2 Instance
+      GroupName: ApacheHTTPD
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          ToPort: 80
+          FromPort: 80
+          CidrIp: 0.0.0.0/0
+  myWebServerInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-05fa00d4c63e32376
+      KeyName: cloudformation
+      SecurityGroups:
+        - Ref: myWebAccessSecurityGroup
+      UserData:
+        Fn::Base64: !Sub |-
+          #!/bin/bash
+          sudo yum update -y
+          sudo yum install -y httpd
+          sudo systemctl start httpd
+          sudo systemctl enable httpd
